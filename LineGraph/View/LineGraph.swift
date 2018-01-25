@@ -119,7 +119,7 @@ class LineGraph:UIView {
             value = self.positionYFor(line: value)
             
             lblAnItem.setCenterY(newCenterY: value)
-            
+            self.drawHorizontalLine(at: value)
             self.addSubview(lblAnItem)
 
             items.append(lblAnItem)
@@ -338,6 +338,7 @@ class LineGraph:UIView {
                     bezierPath.addLine(to: point)
                 }
                 bezierPath.move(to: point)
+                bezierPath.miterLimit = -10.0
                 idx = idx + 1
             }
             
@@ -357,5 +358,31 @@ class LineGraph:UIView {
     func positionX(for index: Int)->CGFloat{
         return axisMargin + self.margin  + (CGFloat(index) * self.stepX())
     }
-
+    
+    func drawHorizontalLine(at newY:Any){
+        var y:CGFloat
+        let bezierPath = UIBezierPath.init()
+        if newY is Double {
+            y = CGFloat.init(NSNumber.init(value: newY as! Double).floatValue)
+        }else if newY is Int{
+            y = CGFloat.init(newY as! Int)
+        }else {
+            y =  newY as! CGFloat
+        }
+        
+        let start = CGPoint.init(x: 40, y: y)
+        
+        bezierPath.move(to: start)
+        bezierPath.addLine(to: CGPoint.init(x: self.x() + self.width(), y: y))
+        
+        //design path in layer
+        let shapeLayer = CAShapeLayer()
+        shapeLayer.path = bezierPath.cgPath
+        shapeLayer.strokeColor = UIColor.darkGray.cgColor
+        shapeLayer.lineWidth = 1.0
+        
+        self.layer.addSublayer(shapeLayer)
+        
+    }
+    
 }
